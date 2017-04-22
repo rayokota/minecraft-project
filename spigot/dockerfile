@@ -18,6 +18,8 @@ RUN git config --global core.autocrlf input
 RUN java -jar minecraft/BuildTools.jar --rev 1.11.2
 RUN cp spigot-1.11.2.jar spigot.jar
 RUN echo "eula=true" > eula.txt
+RUN echo -n "#!/bin/sh\njava -XX:MaxPermSize=128M -Xms512m -Xmx1024m -jar spigot.jar nogui" > start.sh
+RUN chmod +x start.sh
 
 # Install plugins from Andy Hunt's "Learn to Program with Minecraft Plugins"
 RUN wget http://media.pragprog.com/titles/ahmine/code/ahmine-code.tgz && tar xfz ahmine-code.tgz
@@ -36,5 +38,5 @@ RUN mvn clean package -DskipTests
 RUN cp target/raspberryjuice-1.9.jar /plugins
 WORKDIR /
 
-CMD java -XX:MaxPermSize=128M -Xms512m -Xmx1024m -jar spigot.jar nogui
+CMD ./start.sh
 EXPOSE 4711 25565
