@@ -11,13 +11,15 @@ RUN apt-get install -y git
 RUN apt-get install -y default-jdk
 RUN apt-get install -y wget
 RUN apt-get install -y vim
+RUN apt-get install -y maven
 RUN mkdir minecraft
 RUN wget "https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar" -O minecraft/BuildTools.jar
 RUN git config --global core.autocrlf input
 RUN java -jar minecraft/BuildTools.jar --rev 1.11.2
 RUN cp spigot-1.11.2.jar spigot.jar
 RUN echo "eula=true" > eula.txt
-# Install plugins from Andy Hunt's 'Learn to Program with Minecraft Plugins'
+
+# Install plugins from Andy Hunt's "Learn to Program with Minecraft Plugins"
 RUN wget http://media.pragprog.com/titles/ahmine/code/ahmine-code.tgz && tar xfz ahmine-code.tgz
 # Replace bukkit.jar with spigot.jar in build.sh
 RUN find code -name build.sh -exec sed -ie 's/bukkit.jar/spigot.jar/g' {} \;
@@ -25,5 +27,14 @@ ENV MCSERVER /
 WORKDIR /code/HelloWorld
 RUN ./build.sh
 WORKDIR /
+
+# Download Raspberry Juice and put it in the "plugins" folder of the Spigot server
+# Allows Spigot to be used with py3minepi as in Richardson's "Learn to Program with Minecraft"
+RUN git clone https://github.com/zhuowei/RaspberryJuice
+WORKDIR /RaspberryJuice
+RUN mvn clean package -DskipTests
+RUN cp target/raspberryjuice-1.9.jar /plugins
+WORKDIR /
+
 CMD java -XX:MaxPermSize=128M -Xms512m -Xmx1024m -jar spigot.jar nogui
-EXPOSE 25565
+EXPOSE 4711 25565
