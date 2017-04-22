@@ -6,12 +6,13 @@
 #
 FROM ubuntu:16.04
 MAINTAINER Kyle Brown “brownkyl@us.ibm.com”
-RUN apt-get update
-RUN apt-get install -y git
-RUN apt-get install -y default-jdk
-RUN apt-get install -y wget
-RUN apt-get install -y vim
-RUN apt-get install -y maven
+RUN apt-get update && apt-get install -y \
+    default-jdk \
+    git \
+    maven \
+    vim \
+    wget \
+ && rm -rf /var/lib/apt/lists/*
 RUN mkdir minecraft
 RUN wget "https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar" -O minecraft/BuildTools.jar
 RUN git config --global core.autocrlf input
